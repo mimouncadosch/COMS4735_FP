@@ -12,7 +12,7 @@ class ContourFinder(object):
         Find and draw contours in image
         """
         kernel = np.ones((5,5),np.uint8)
-        img = cv.morphologyEx(img, cv.MORPH_ERODE, kernel)
+        img = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)
 
         cv.imshow("eroded", img)
         cv.waitKey(0)
@@ -24,14 +24,14 @@ class ContourFinder(object):
 
         contours, hierarchy = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE, (0,0))
 
-
+        ctr_color = (0, 250, 0)
         areas = np.zeros([len(contours), 1])
         for i in range(len(contours)):
-
+            # cv.drawContours(img, contours, i, ctr_color, 5,8)
             area = cv.contourArea(contours[i])
             areas[i] = area
 
-        # Top two areas
+        # # Top two areas
         top = np.argsort(areas, axis=0)[::-1][0:2]
 
         ctr_color = (0, 250, 0)
