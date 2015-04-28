@@ -13,7 +13,7 @@ def perp(a) :
 
 
 def line_intersection(a1,a2, b1,b2) :
-    # TODO: Check: √
+    # TODO: Check: done
     da = a2-a1
     db = b2-b1
     dp = a1-b1

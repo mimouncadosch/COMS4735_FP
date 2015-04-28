@@ -1,18 +1,15 @@
 import numpy as np
 import math
-import cv2 as cv
 from lines import line_intersection
 
 class VanishingPointFinder(object):
-    """docstring for VanishingPointFinder"""
+    """VanishingPointFinder class"""
     def __init__(self):
         super(VanishingPointFinder, self).__init__()
         # self.arg = arg
 
 
-    def compute_vanishing_point(self, lines, shape, img):
-        # TODO: no passing img as argument in production, it will slow down processing
-
+    def compute_vanishing_point(self, lines, shape):
         # 1) Find slope and y-intercept of each line
         # A line can be expressed as y = mx + b, where m is the slope and b the y-intercept
         slopes = [] # list containing slope of all lines in image
@@ -72,15 +69,18 @@ class VanishingPointFinder(object):
             i+=1
             j=i+1
 
-        # Eliminate zero values
+        # 4) Eliminate zero values and return
         inters = inters[~np.all(inters == 0, axis=1)]
-        # m = 2
-        # inters[:,0] = inters[:,0][abs(inters[:,0] - np.mean(inters)) < m * np.std(inters)]
-        # TODO : remove outliers
-        vp_x, vp_y = np.mean(inters, axis = 0)
+        inters_x = inters[:,0]
+        inters_y = inters[:,1]
 
-        # Draw VP (for debugging)
-        cv.circle(img, (int(vp_x), int(vp_y)), 5, (0, 255, 255), 2)
+        # TODO: explain m
+        m = 2
+        inters_x = inters_x[abs(inters_x - np.mean(inters_x)) < m * np.std(inters_x)]
+        inters_y = inters_y[abs(inters_y - np.mean(inters_y)) < m * np.std(inters_y)]
+
+        vp_x = np.mean(inters_x)
+        vp_y = np.mean(inters_y)
 
         ## Draw extended lines (for debugging)
         # for i in range(n_lines):
@@ -88,13 +88,14 @@ class VanishingPointFinder(object):
         #     p2 = (x_right, int(y_extreme_vals[i, 1]))
         #     cv.line(img, p1, p2, (0, 255, 0))
 
-
         # cv.imwrite("../test_images/extended_lines_4_27.jpg", img)
 
         return (vp_x, vp_y)
 
-
     def nCr(self, n,r):
+        """
+        Function: n choose k
+        """
         f = math.factorial
         return f(n) / f(r) / f(n-r)
 
