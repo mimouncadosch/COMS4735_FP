@@ -1,4 +1,5 @@
 import cv2 as cv
+import numpy as np
 class ColorFilterer(object):
     """docstring for ColorFilterer"""
     def __init__(self):
@@ -27,9 +28,11 @@ class ColorFilterer(object):
         # Combined image
         img = cv.bitwise_or(white_filtered_img, yellow_filtered_img, mask=None)
 
-        # TODO: Horizontal filter
-        
-        img = cv.Sobel(img, cv.CV_8U, 0, 1, 1)
-        cv.imshow("After applying Sobel", img)
-        cv.waitKey(0)
+        kernel = np.array([-1, -1, -1, -1, -1, 0, 1, 1, 1, 1, 1])
+        img = cv.filter2D(img, cv.CV_8U, kernel)
+
+        # img = cv.Sobel(img, cv.CV_8U, 0, 1, 1)
+        # cv.imshow("After applying Sobel", img)
+        # cv.waitKey(0)
+
         return img
