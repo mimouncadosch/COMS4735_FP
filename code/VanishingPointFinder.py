@@ -12,7 +12,7 @@ class VanishingPointFinder(object):
     def compute_vanishing_point(self, lines, shape):
         # 1) Find slope and y-intercept of each line
         # A line can be expressed as y = mx + b, where m is the slope and b the y-intercept
-        slopes = [] # list containing slope of all lines in image
+        slopes = []     # list containing slope of all lines in image
         intercepts = [] # list of y-intercepts of all lines in image
 
         for x1,y1,x2,y2 in lines[0]:
