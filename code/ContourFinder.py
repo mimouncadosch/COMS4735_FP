@@ -12,23 +12,15 @@ class ContourFinder(object):
         Find and draw contours in image
         """
 
-        # 1) De-noise the image by erosion
-        kernel = np.ones((5,5),np.uint8)
-        img = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)
-
-        # cv.imshow("eroded", img)
-        # cv.waitKey(0)
-
-        # 2) Apply a binary mask and retrieve contours
+        # 1) Apply a binary mask and retrieve contours
         lb = (1, 1, 1)
         ub = (255, 255, 255)
         mask = cv.inRange(img, lb, ub)
         img = cv.bitwise_and(img,img,mask = mask)
 
-        contours, hierarchy = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE, (0,0))
+        contours, hierarchy = cv.findContours(mask, cv.RETR_CCOMP, cv.CHAIN_APPROX_NONE, (0,0))
 
         ctr_color = (0, 250, 0)
-        epsilon = 0.01
         areas = np.zeros([len(contours), 1])
 
         # 3) Find contours with largest areas
@@ -42,11 +34,10 @@ class ContourFinder(object):
 
         # 4) (For debugging): draw largest contours found, and draw lines passing through them
         # for t in top:
-        #     cv.drawContours(img, contours, t, ctr_color, 5,8)
-
+        #     cv.drawContours(img, contours, t, ctr_color, 3,8)
         self.filter_contours(contours, top, vp, img)
-        return contours
-
+        # return contours
+        return img
 
     def filter_contours(self, contours, top_index, vp, img):
         """
@@ -75,20 +66,31 @@ class ContourFinder(object):
             # 2) For each line check if y = m * vp_x + b = 0
             # To check for y = 0, use threshold
             # TODO: justify thresh
-            thresh = 5  # pixels
+            thresh = 25  # pixels
             y = m * vp[0] + b
+
+            # (For debugging): show lines that are being filtered
+            print y
+            p1 = (0, int(intercepts[i]))
+            p2 = (cols, int(slopes[i]*cols + intercepts[i]))
+            # cv.line(img, p1, p2, (0, 200, 200), 5)
+            # cv.imshow("img", img)
+            # cv.waitKey(0)
+
             if abs(y) <= thresh:
                 lane_ids.append(i)
 
+
+        cv.circle(img, vp, 5, (100, 100, 0), 4)
+
         # 3) Draw only the lane markings
         for id in lane_ids:
-            print id
             p1 = (0, int(intercepts[id]))
             p2 = (cols, int(slopes[id]*cols + intercepts[id]))
 
-            cv.line(img, p1, p2, (0, 200, 200), 5)
+            cv.line(img, p1, p2, (0, 200, 200), 3)
 
 
-        cv.imshow("contours", img)
-        cv.waitKey(0)
+        # cv.imshow("contours", img)
+        # cv.waitKey(0)
         return True

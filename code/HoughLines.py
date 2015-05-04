@@ -17,7 +17,7 @@ class HoughLines(object):
         thresh = 50
         lines = cv.HoughLinesP(edges, rho, np.pi/180, thresh, minLineLength, maxLineGap)
 
-        # Draw lines (for debugging purposes)
+        # # Draw lines (for debugging purposes)
         # for x1,y1,x2,y2 in lines[0]:
         #     if vp.filter_points(x1,y1,x2,y2) is False:  # Eliminate vertical lines that do not converge towards VP
         #         continue

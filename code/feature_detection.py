@@ -5,19 +5,11 @@ from ColorFilterer import *
 from HoughLines import *
 from ContourFinder import *
 
-def feature_detection():
-    vp = VanishingPointFinder()
-    cf = ColorFilterer()
-    hl = HoughLines()
-    ctf = ContourFinder()
+def feature_detection(vp, cf, hl, ctf, img):
+
     """
     Detects features in the image
     """
-    img = cv.imread("../data/lanes_3_medium.jpg")
-
-    # cv.imshow("image", img)
-    # cv.waitKey(0)
-
     # 1) Find vanishing point and remove everything above horizon line
     y_max, x_max, depth = img.shape
     lines = hl.get_hough_lines(img)
@@ -38,11 +30,11 @@ def feature_detection():
 
     # 3) Find contours and filter them
     # Send only a single channel of the image as findContours in OpenCV takes a single channel, 8-bit image
-    contours = ctf.find_contours(img, (int(x),int(y)))
+    img = ctf.find_contours(img, (int(x),int(y)))
 
+    # cv.imshow("img", img)
+    # cv.waitKey(0)
     # cv.line(img,(x1,y1),(x2,y2),(0,0,255),2)
-    #
-
 
     # cv.imwrite("../test_images/horizon.jpg", img)
-    return True
+    return img
