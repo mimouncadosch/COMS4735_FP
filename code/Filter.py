@@ -86,6 +86,8 @@ class Filter(object):
             b1 = - min_positive_slope * vp_x
             y1 = abs(b1)
             cv.line(img, (0, int(y1)), (vp_x, 0), (0, 255, 0), 5)
+        else:
+            min_positive_slope = np.nan
 
         neg_slopes = np.where(slopes < 0)
         if len(slopes[neg_slopes])  > 0:
@@ -93,8 +95,7 @@ class Filter(object):
             b2 = - min_negative_slope * vp_x
             y2 = abs(min_negative_slope * cols + b2)
             cv.line(img, (cols, int(y2)), (vp_x, 0), (0, 255, 0), 5)
+        else:
+            min_negative_slope = np.nan
 
-        # cv.imshow("img with new lines", img)
-        # cv.waitKey(0)
-
-        return img
+        return img, min_positive_slope, min_negative_slope
