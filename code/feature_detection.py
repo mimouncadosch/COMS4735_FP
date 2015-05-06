@@ -49,7 +49,7 @@ def feature_detection(vp, filter, hl, ctf, img):
     bw, slopes = filter.merge_lines(bw, lines, vp, int(x))
 
     # 3) Filter the merged lines
-    # bw = filter.filter_lines(bw, slopes, int(x))
+    bw = filter.filter_lines(bw, slopes, int(x))
     # cv.imshow("bw", bw)
     # cv.waitKey(0)
     # 3) Find contours and filter them

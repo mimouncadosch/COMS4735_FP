@@ -58,7 +58,7 @@ class Filter(object):
         # 5) Plot the lines (for debugging purposes)
         # All lines pass through the center of gravity, where y = 0 and x = x_vp
         # y = m * x_vp + b  =>  b = - m * x_vp
-
+        """
         for s in tot_slopes[0]:
             # If slope > 0, line must pass through left side of image, and vanishing point
             b = - s * vp_x
@@ -72,20 +72,29 @@ class Filter(object):
             if s < 0:
                 y = abs(s * cols + b)
                 cv.line(img, (cols, int(y)), (vp_x, 0), (100, 100, 100), 5)
-
+        """
         return img, tot_slopes
 
 
     def filter_lines(self, img, slopes, vp_x):
-        print slopes
-        # Positive slopes
-        # b1 = - s * vp_x[0]
-        # min_positive_slope = np.min(slopes[np.where(slopes > 0)])
-        #
-        # cv.line(img, (0, int(y)), (vp_x[0], 0), (100, 100, 100), 5)
-        # min_negative_slope = np.min(slopes[np.where(slopes < 0)])
+        rows, cols = img.shape[:2]
 
+        pos_slopes = np.where(slopes > 0)
 
+        if len(slopes[pos_slopes]) > 0:
+            min_positive_slope = np.max(slopes[pos_slopes])
+            b1 = - min_positive_slope * vp_x
+            y1 = abs(b1)
+            cv.line(img, (0, int(y1)), (vp_x, 0), (0, 255, 0), 5)
 
+        neg_slopes = np.where(slopes < 0)
+        if len(slopes[neg_slopes])  > 0:
+            min_negative_slope = np.max(slopes[neg_slopes])
+            b2 = - min_negative_slope * vp_x
+            y2 = abs(min_negative_slope * cols + b2)
+            cv.line(img, (cols, int(y2)), (vp_x, 0), (0, 255, 0), 5)
+
+        # cv.imshow("img with new lines", img)
+        # cv.waitKey(0)
 
         return img
