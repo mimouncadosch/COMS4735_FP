@@ -20,6 +20,8 @@ class VanishingPointFinder(object):
                 continue
 
             # Slope m
+            if x2 - x1 == 0:
+                continue
             slope  = float(y2 - y1) / (x2 - x1)
 
             # y = mx + b => b = y - mx.
@@ -44,7 +46,10 @@ class VanishingPointFinder(object):
         # Find the average point of intersection of all these possibilities
 
         n_inters = self.nCr(n_lines,2)
-        print "There are [%d] intersections", n_inters
+        # print "There are %d intersections", n_inters
+        if n_inters == 0:
+            return (np.nan, np.nan)
+
 
         inters = np.zeros([n_inters, 2])
         i = 0
@@ -74,7 +79,7 @@ class VanishingPointFinder(object):
         inters_x = inters[:,0]
         inters_y = inters[:,1]
 
-        # TODO: explain m
+        # TODO: explain m: values that are more than m standard deviations away from mean are discarded
         m = 2
         inters_x = inters_x[abs(inters_x - np.mean(inters_x)) < m * np.std(inters_x)]
         inters_y = inters_y[abs(inters_y - np.mean(inters_y)) < m * np.std(inters_y)]
@@ -96,6 +101,8 @@ class VanishingPointFinder(object):
         """
         Function: n choose k
         """
+        if not n > 2:
+            return 0
         f = math.factorial
         return f(n) / f(r) / f(n-r)
 

@@ -13,11 +13,11 @@ class ContourFinder(object):
         """
 
         # 1) Apply a binary mask and retrieve contours
-        lb = (1, 1, 1)
-        ub = (255, 255, 255)
+        lb = (1)
+        ub = (255)
         mask = cv.inRange(img, lb, ub)
         img = cv.bitwise_and(img,img,mask = mask)
-
+        # contours, hierarchy = cv.findContours(img, cv.RETR_CCOMP, cv.CHAIN_APPROX_NONE, (0,0))
         contours, hierarchy = cv.findContours(mask, cv.RETR_CCOMP, cv.CHAIN_APPROX_NONE, (0,0))
 
         ctr_color = (0, 250, 0)
@@ -33,8 +33,11 @@ class ContourFinder(object):
         top = np.argsort(areas, axis=0)[::-1][0:3]
 
         # 4) (For debugging): draw largest contours found, and draw lines passing through them
-        # for t in top:
-        #     cv.drawContours(img, contours, t, ctr_color, 3,8)
+        for t in top:
+            cv.drawContours(img, contours, t, ctr_color, 3,8)
+
+        cv.imshow("img with contours", img)
+        cv.waitKey(0)
         self.filter_contours(contours, top, vp, img)
         # return contours
         return img
