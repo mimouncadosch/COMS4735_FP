@@ -5,10 +5,11 @@ from ColorFilterer import *
 from HoughLines import *
 from ContourFinder import *
 from Filter import *
+import time 
 
 last_vp = [0, 0]
 def feature_detection(vp, filter, hl, ctf, img):
-
+    #start_time = time.time()
     """
     Detects features in the image
     """
@@ -20,12 +21,15 @@ def feature_detection(vp, filter, hl, ctf, img):
     # 1) Find vanishing point and remove everything above horizon line
     # 1a) Get Hough lines with probabilistic method
     bw, lines = hl.get_hough_lines(bw, vp)
-
+    #print("Hough Lines:---%s----" %(time.time() - start_time))
+    #start_time2 = time.time()
     if lines.shape[1] == 0: # Return if no Hough lines found
         return bw
 
     # 1b) Compute vanishing point VP(x, y)
     (x, y) = vp.compute_vanishing_point(lines, img.shape)
+    #print("Vanishing Point:---%s----" %(time.time() - start_time2))
+    #start_time3 = time.time()
 
     # If no vanish point is found, use last found
     if np.isnan(x) or np.isnan(y):
@@ -47,9 +51,13 @@ def feature_detection(vp, filter, hl, ctf, img):
 
     # 2) Merge lines found
     bw, slopes = filter.merge_lines(bw, lines, vp, int(x))
+    #print("Merge Lines:---%s----" %(time.time() - start_time3))
+    #start_time4 = time.time()
 
     # 3) Filter the merged lines
     bw, slope1, slope2 = filter.filter_lines(bw, slopes, int(x))
+    #print("Filter Lines:---%s----" %(time.time() - start_time4))
+
     # cv.imshow("bw", bw)
     # cv.waitKey(0)
     # 3) Find contours and filter them

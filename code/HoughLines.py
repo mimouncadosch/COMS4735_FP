@@ -10,7 +10,7 @@ class HoughLines(object):
     def get_hough_lines(self, img, vp):
         # Probabilistic Hough transform
         # TODO: tune parameters for better results and faster speed
-        edges = cv.Canny(img,50,150,apertureSize = 3)
+        edges = cv.Canny(img,50,100,apertureSize = 3)
         minLineLength = 100
         maxLineGap = 10
         rho = 1
