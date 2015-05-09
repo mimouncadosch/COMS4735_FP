@@ -36,12 +36,14 @@ class Filter(object):
             intercepts.append(b)
             id += 1
 
+        """
         # 2) Eliminate zero values from the slopes vector
         n_zeros = np.where(slopes == 0)
         if len(n_zeros[0]) > 0:
             first_zero_val = np.min(np.where(slopes == 0)[0])
             slopes = slopes[0:first_zero_val, :]
-
+        """
+        """
         # 3) Cluster the slopes into n_clusters clusters
         fl = fclusterdata(slopes, 1)
         n_clusters = np.max(fl)
@@ -55,6 +57,7 @@ class Filter(object):
             indices = np.where(fl == l)[0]  # Get indices of slopes that correspond to that cluster
             tot_slopes[0, l-1] = np.mean(slopes[indices])
 
+        """
         # 5) Plot the lines (for debugging purposes)
         # All lines pass through the center of gravity, where y = 0 and x = x_vp
         # y = m * x_vp + b  =>  b = - m * x_vp
@@ -73,29 +76,37 @@ class Filter(object):
                 y = abs(s * cols + b)
                 cv.line(img, (cols, int(y)), (vp_x, 0), (100, 100, 100), 5)
         """
-        return img, tot_slopes
+        return img, slopes, intercepts  #tot_slopes
 
-
-    def filter_lines(self, img, slopes, vp_x):
+    def filter_lines(self, img, slopes, intercepts, vp_x):
         rows, cols = img.shape[:2]
 
-        pos_slopes = np.where(slopes > 0)
+        max_positive_slope = np.max(slopes)
+        max_positive_slope_id = np.argmax(slopes)
+        b1 = intercepts[max_positive_slope_id]
+        y1 = abs(b1)
 
+        cv.line(img, (0, int(y1)), (vp_x, 0), (0, 255, 0), 5)
+        """
+        pos_slopes = np.where(slopes > 0)
+        print intercepts
         if len(slopes[pos_slopes]) > 0:
-            min_positive_slope = np.max(slopes[pos_slopes])
-            b1 = - min_positive_slope * vp_x
-            y1 = abs(b1)
-            cv.line(img, (0, int(y1)), (vp_x, 0), (0, 255, 0), 5)
+            max_positive_slope = np.max(slopes[pos_slopes])
+            # b1 = np.argmax(intercepts[pos_slopes])
+            # b1 = - max_positive_slope * vp_x
+            # y1 = abs(b1)
+            # cv.line(img, (0, int(y1)), (vp_x, 0), (0, 255, 0), 5)
         else:
-            min_positive_slope = np.nan
+            max_positive_slope = np.nan
 
         neg_slopes = np.where(slopes < 0)
         if len(slopes[neg_slopes])  > 0:
-            min_negative_slope = np.max(slopes[neg_slopes])
+            min_negative_slope = np.min(slopes[neg_slopes])
             b2 = - min_negative_slope * vp_x
             y2 = abs(min_negative_slope * cols + b2)
             cv.line(img, (cols, int(y2)), (vp_x, 0), (0, 255, 0), 5)
         else:
             min_negative_slope = np.nan
+        """
 
-        return img, min_positive_slope, min_negative_slope
+        return img, max_positive_slope, min_negative_slope

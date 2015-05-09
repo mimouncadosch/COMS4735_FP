@@ -5,6 +5,7 @@ from ColorFilterer import *
 from HoughLines import *
 from ContourFinder import *
 from Filter import *
+import time
 
 last_vp = [0, 0]
 def feature_detection(vp, filter, hl, ctf, img):
@@ -12,6 +13,7 @@ def feature_detection(vp, filter, hl, ctf, img):
     """
     Detects features in the image
     """
+    # start_time = time.time()
     # 0) Setup
     y_max, x_max, depth = img.shape
     # Black & white image
@@ -20,7 +22,8 @@ def feature_detection(vp, filter, hl, ctf, img):
     # 1) Find vanishing point and remove everything above horizon line
     # 1a) Get Hough lines with probabilistic method
     bw, lines = hl.get_hough_lines(bw, vp)
-
+    # print ("Hough Lines ---%s" %(time.time() - start_time))
+    # print lines
     if lines.shape[1] == 0: # Return if no Hough lines found
         return bw
 
@@ -46,10 +49,10 @@ def feature_detection(vp, filter, hl, ctf, img):
     # cv.line(img, (0, int(y)), (x_max, int(y)), (0, 255, 200), 2) # Draw horizon line
 
     # 2) Merge lines found
-    bw, slopes = filter.merge_lines(bw, lines, vp, int(x))
+    bw, slopes, intercepts = filter.merge_lines(bw, lines, vp, int(x))
 
     # 3) Filter the merged lines
-    bw, slope1, slope2 = filter.filter_lines(bw, slopes, int(x))
+    bw, slope1, slope2 = filter.filter_lines(bw, slopes, intercepts, int(x))
     # cv.imshow("bw", bw)
     # cv.waitKey(0)
     # 3) Find contours and filter them
