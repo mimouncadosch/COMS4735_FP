@@ -6,7 +6,7 @@ clicks = 0
 global_image = np.zeros((480, 271, 3))
 
 
-def compute_transform_matrix(img):
+def compute_transform_matrix(img, t_number):
     """
     This function computes and stores the transform matrix of an object from the world to the image plane.
     """
@@ -32,29 +32,36 @@ def compute_transform_matrix(img):
             [400, 335],
             [0, 335]
                     ], dtype="float32")
+    # Distances of diamond for transform_matrix24.npy
+    # dst = np.array([
+    #         [38, 0],
+    #         [76, 167.5],
+    #         [38, 335],
+    #         [0, 167.5]
+    #                 ], dtype="float32")
 
 
     M = cv.getPerspectiveTransform(src, dst)
 
-    np.save("transform_matrix2.npy", M)
+    np.save("t_matrices/transform_matrix" + str(t_number) + ".npy", M)
+    print "New Transform Matrix " + str(t_number) + " Successfully Saved."
 
     return True
 
 
-def apply_transform(img):
+def apply_transform(img, t_number):
     """
     This function applies the transform matrix to the image
     """
-    M = np.load("transform_matrix2.npy")
+    print "Applying Transform Matrix " + str(t_number)
+    M = np.load("t_matrices/transform_matrix" + str(t_number) + ".npy")
     warped = cv.warpPerspective(img, M, (1000,1000))
-    cv.imshow("warped", warped)
-    cv.waitKey(0)
-
-    points = capture_points(warped)
 
 
-    return True
+    # points = capture_points(warped)
 
+
+    return warped
 
 def capture_points(img):
     """
@@ -67,11 +74,11 @@ def capture_points(img):
     # cv.imshow("global_image", global_image)
     # cv.waitKey(0)
 
-    cv.namedWindow("image")
-    cv.setMouseCallback("image", capture_position)
+    cv.namedWindow("Capture Points:")
+    cv.setMouseCallback("Capture Points:", capture_position)
 
     while (1):
-        cv.imshow("image", global_image)
+        cv.imshow("Capture Points:", global_image)
         if cv.waitKey(20) & 0xFF == 27:
             break
     cv.destroyAllWindows()
